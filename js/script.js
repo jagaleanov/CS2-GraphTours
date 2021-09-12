@@ -14,7 +14,7 @@ class Graph {
         this.edgesList = [];
         this.nodeCounter = 0;
         this.addedList = [];
-        this.tempTree = [];
+        this.tree;
     }
 
     insertNode(x, y) {
@@ -35,7 +35,7 @@ class Graph {
         word += String(id);
         let recentlyAddedList = [];
         if (this.addedList.length == 0) {
-            this.tempTree.addWord(word);
+            this.tree.addWord(word);
             this.addedList.push(id);
         }
         if (Array.isArray(this.edgesList[id])) {
@@ -43,7 +43,7 @@ class Graph {
             for (let j = 0; j < this.edgesList[id].length; j++) {
 
                 if (this.addedList.indexOf(this.edgesList[id][j]) == -1) {
-                    this.tempTree.addWord(word + this.edgesList[id][j]);
+                    this.tree.addWord(word + this.edgesList[id][j]);
                     this.addedList.push(this.edgesList[id][j]);
                     recentlyAddedList.push(this.edgesList[id][j]);
                 }
@@ -55,7 +55,30 @@ class Graph {
                 }
             }
         }
-        return this.tempTree.getMatrixHTML();
+        return this.tree.getMatrixHTML();
+    }
+
+    depthTourFrom(id, word = "") {
+        id = Number.parseInt(id);
+        word += String(id);
+        if (this.addedList.length == 0) {
+            this.tree.addWord(word);
+            this.addedList.push(id);
+        }
+        if (Array.isArray(this.edgesList[id])) {
+
+            for (let j = 0; j < this.edgesList[id].length; j++) {
+
+                if (this.addedList.indexOf(this.edgesList[id][j]) == -1) {
+                    this.tree.addWord(word + this.edgesList[id][j]);
+                    this.addedList.push(this.edgesList[id][j]);
+
+                    this.depthTourFrom(this.edgesList[id][j], word);
+                }
+
+            }
+        }
+        return this.tree.getMatrixHTML();
     }
 }
 
@@ -97,21 +120,23 @@ class Tree {
     }
 
     //ADD TO TREE
-    addRight(head, char) {
+    addRight(head, num) {
         if (head != null) {
 
-            if (head.value == '}' || head.value.charCodeAt(0) > char.charCodeAt(0)) {
-                let newNode = new TreeNode(char);
+            //if (head.value == '}' || head.value.charCodeAt(0) > num.charCodeAt(0)) {
+            if (head.value == '}' || head.value > num) {
+                let newNode = new TreeNode(num);
                 head.parent = newNode;
                 head.type = 1;
                 newNode.right = head;
                 return newNode;
             } else {
                 let node = head;
-                while (node.right != null && node.right.value.charCodeAt(0) < char.charCodeAt(0)) {
+                //while (node.right != null && node.right.value.charCodeAt(0) < num.charCodeAt(0)) {
+                while (node.right != null && node.right.value < num) {
                     node = node.right;
                 }
-                let newNode = new TreeNode(char);
+                let newNode = new TreeNode(num);
                 if (newNode.right != null) {
                     node.right.parent = newNode;
                     node.right.type = 1;
@@ -123,7 +148,7 @@ class Tree {
                 return head;
             }
         } else {
-            return new TreeNode(char);
+            return new TreeNode(num);
         }
     }
 
@@ -135,22 +160,28 @@ class Tree {
         } else {
             let node = head.down;
             if (node == null) {//si no hay mas letras debajo
-                head.down = this.addRight(null, word.charAt(0));
+                //head.down = this.addRight(null, word.charAt(0));
+                head.down = this.addRight(null, word[0]);
                 head.down.parent = head;
                 head.down.type = 0;
                 head = this.addWordRecursive(head, word);
-            } else if (node.value == word.charAt(0)) {//si la letra de abajo coincide
-                node = this.addWordRecursive(node, word.substring(1));
+                //} else if (node.value == word.charAt(0)) {//si la letra de abajo coincide
+            } else if (node.value == word[0]) {//si la letra de abajo coincide
+                //node = this.addWordRecursive(node, word.substring(1));
+                node = this.addWordRecursive(node, word.slice(1));
             } else {
-                while (node.right != null && node.right.value != word.charAt(0)) {
+                //while (node.right != null && node.right.value != word.charAt(0)) {
+                while (node.right != null && node.right.value != word[0]) {
                     node = node.right;
                 }
                 if (node.right != null) {
-                    node.right = this.addWordRecursive(node.right, word.substring(1));
+                    //node.right = this.addWordRecursive(node.right, word.substring(1));
+                    node.right = this.addWordRecursive(node.right, word.slice(1));
                     node.right.parent = node;
                     node.right.type = 1;
                 } else {
-                    head.down = this.addRight(head.down, word.charAt(0));
+                    //head.down = this.addRight(head.down, word.charAt(0));
+                    head.down = this.addRight(head.down, word[0]);
                     head.down.parent = head;
                     head.down.type = 0;
                     head = this.addWordRecursive(head, word);
@@ -160,18 +191,12 @@ class Tree {
         return head;
     }
 
-    addWord(word) {
-        if (!this.wordsList.includes(word)) {
-            this.head = this.addWordRecursive(this.head, word);
-            this.tableData = [[]];
-            this.lineCounter = 0;
-            this.treeToMatrix(this.head);
-            this.completeMatrix();
-            this.wordsList.push(word);
-            this.wordsList.sort();
-        } else {
-            alert("la palabra ya se encuentra en el árbol.");
-        }
+    addWord(arrayWord) {
+        this.head = this.addWordRecursive(this.head, arrayWord);
+        this.tableData = [[]];
+        this.lineCounter = 0;
+        this.treeToMatrix(this.head);
+        this.completeMatrix();
     }
 
     //CREATE HTML
@@ -272,15 +297,6 @@ class Tree {
         return html;
     }
 
-    getListHTML() {
-        let html = '<ul>';
-        for (let i = 0; i < this.wordsList.length; i++) {
-            html += '<li>' + this.wordsList[i] + '</li>';
-        }
-        html += '</ul>';
-        return html;
-    }
-
     //RESTART
     restart() {
         this.tableData = [[]];
@@ -297,10 +313,10 @@ const graph = new Graph();
 let insertData = true;
 
 function insertNode(x, y) {
-    if (graph.nodeCounter < 9 && insertData == true) {
-        graph.insertNode(x, y);
-        drawTable();
-        drawGraph();
+    if (insertData == true) {
+            graph.insertNode(x, y);
+            drawTable();
+            drawGraph();
     }
 }
 
@@ -339,6 +355,7 @@ function insertEdges() {
 }
 
 function drawGraph() {
+    // create an array with nodes
     let nodesData = [];
     let nodesList = graph.nodesList;
     for (let i = 1; i < nodesList.length; i++) {
@@ -374,7 +391,7 @@ function drawGraph() {
         physics: false,
         interaction: {
             dragNodes: false,
-            zoomView: false, 
+            zoomView: false,
             dragView: false
         }
     };
@@ -398,8 +415,16 @@ function drawTable() {
             html += "<td>";
             html +=
                 '<div class="form-group">' +
-                '<input type="number" name="edge_' + i + '_' + j + '" id="edge_' + i + '_' + j + '" class="form-control" value="" autocomplete="off" min="0" step="1">' +
-                '</div>';
+                '<select name="edge_' + i + '_' + j + '" id="edge_' + i + '_' + j + '" class="form-control">';
+            html += '<option value=""></option>';
+            for (let k = 1; k <= graph.nodeCounter; k++) {
+                if (k != i) {
+                    html += '<option value="' + k + '">' + k + '</option>';
+                }
+            }
+
+            html += '</select>'
+            '</div>';
             html += "</td>";
         }
         html += "</tr>";
@@ -411,7 +436,7 @@ function drawTrees() {
     let html = "";
     for (let i = 1; i < graph.nodesList.length; i++) {
         graph.addedList = [];
-        graph.tempTree = new Tree();
+        graph.tree = new Tree();
         html += '<div class="col-md-4">';
         html += '<h6>Origen ' + i + '</h6>';
         html += '<div class="table-responsive">';
@@ -422,7 +447,22 @@ function drawTrees() {
         html += '</div>';
     }
     //html = graph.pathsFrom(1);
-    $('#tableTrees').html(html)
+    $('#tableWidthTrees').html(html)
+    html = "";
+    for (let i = 1; i < graph.nodesList.length; i++) {
+        graph.addedList = [];
+        graph.tree = new Tree();
+        html += '<div class="col-md-4">';
+        html += '<h6>Origen ' + i + '</h6>';
+        html += '<div class="table-responsive">';
+        html += '<table class="mb-5">';
+        html += graph.depthTourFrom(i);
+        html += '</table>';
+        html += '</div>';
+        html += '</div>';
+    }
+    //html = graph.pathsFrom(1);
+    $('#tableDepthTrees').html(html)
 }
 
 drawGraph()
