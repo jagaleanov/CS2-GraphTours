@@ -30,32 +30,63 @@ class Graph {
         this.edgesList[from].push(to);
     }
 
-    widthTourFrom(id, word = "") {
+    widthTourFrom(id) {
+        this.addedList = [];
+        this.tree = new Tree();
+
+        let addedList = [id];
+
+        let queue = new Queue();
+        queue.enqueue(id);
+        this.tree.addWord([id]);
+
+
+        while (!queue.isEmpty()) {
+
+            let parentNode = queue.dequeue(); // mutates the queue
+            let children = this.edgesList[parentNode];
+
+            for (let i = 0; i < children.length; i++) {
+
+                if (addedList.indexOf(children[i]) == -1) {
+                    addedList.push(children[i]);
+                    queue.enqueue(children[i]);
+
+                    let word = this.tree.findNode(this.tree.head, parentNode);
+                    word.reverse();
+                    word.shift();
+                    word.push(children[i]);
+                    this.tree.addWord(word);
+                }
+            }
+        }
+        return this.tree.getMatrixHTML();
+    }
+
+
+    depthTourFrom(id, word = "") {
         id = Number.parseInt(id);
         word += String(id);
-        let recentlyAddedList = [];
         if (this.addedList.length == 0) {
             this.tree.addWord(word);
             this.addedList.push(id);
         }
         if (Array.isArray(this.edgesList[id])) {
-            //this.tempList.push(id);
+
             for (let j = 0; j < this.edgesList[id].length; j++) {
 
                 if (this.addedList.indexOf(this.edgesList[id][j]) == -1) {
                     this.tree.addWord(word + this.edgesList[id][j]);
                     this.addedList.push(this.edgesList[id][j]);
-                    recentlyAddedList.push(this.edgesList[id][j]);
+
+                    this.depthTourFrom(this.edgesList[id][j], word);
                 }
 
             }
-            for (let j = 0; j < this.edgesList[id].length; j++) {
-                if (this.addedList.indexOf(this.edgesList[id][j]) == -1 || recentlyAddedList.indexOf(this.edgesList[id][j]) != -1) {
-                    this.widthTourFrom(this.edgesList[id][j], word);
-                }
-            }
         }
         return this.tree.getMatrixHTML();
+<<<<<<< HEAD
+=======
     }
 
     depthTourFrom(id, word = "") {
@@ -79,6 +110,7 @@ class Graph {
             }
         }
         return this.tree.getMatrixHTML();
+>>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
     }
 }
 
@@ -117,6 +149,24 @@ class Tree {
         this.wordsList = [];
         this.treeToMatrix(this.head);
         this.completeMatrix();
+    }
+
+    findNode(head, id) {
+        if (head.value == id) {
+            return [id];
+        } else {
+            let node = head.down;
+            //wordIni.push(parseInt(head.value));
+            while (node != null) {
+                let res = this.findNode(node, id);
+                if (res != false) {
+                    res.push((parseInt(head.value)));
+                    return res;
+                }
+                node = node.right;
+            }
+            return false;
+        }
     }
 
     //ADD TO TREE
@@ -294,9 +344,14 @@ class Tree {
             }
             html += '</tr>';
         }
+
+<<<<<<< HEAD
+
         return html;
     }
 
+=======
+>>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
     //RESTART
     restart() {
         this.tableData = [[]];
@@ -309,14 +364,71 @@ class Tree {
     }
 }
 
+class ListNode {
+    data;
+    next;
+
+    constructor(data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+class Queue {
+
+    head;
+
+    constructor() {
+        this.head = null;
+    }
+
+    enqueue(data) {
+        var newNode = new ListNode(data);
+
+        if (this.head == null) {
+            this.head = newNode;
+        } else {
+            let nodeParent = this.findTail();
+            nodeParent.next = newNode;
+        }
+    }
+
+    findTail() {
+        let pivot = this.head;
+        while (pivot.next != null) {
+            pivot = pivot.next;
+        }
+        return pivot;
+    }
+
+    dequeue() {
+
+        var removed = this.head;
+        var next = this.head.next;
+
+        this.head = next;
+        return removed.data;
+    }
+
+    isEmpty() {
+        return this.head == null;
+    }
+}
+
 const graph = new Graph();
 let insertData = true;
 
 function insertNode(x, y) {
     if (insertData == true) {
+<<<<<<< HEAD
+        graph.insertNode(x, y);
+        drawTable();
+        drawGraph();
+=======
             graph.insertNode(x, y);
             drawTable();
             drawGraph();
+>>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
     }
 }
 
@@ -433,6 +545,7 @@ function drawTable() {
 }
 
 function drawTrees() {
+
     let html = "";
     for (let i = 1; i < graph.nodesList.length; i++) {
         graph.addedList = [];
@@ -462,7 +575,11 @@ function drawTrees() {
         html += '</div>';
     }
     //html = graph.pathsFrom(1);
+<<<<<<< HEAD
+    $('#tableDepthTrees').html(html);
+=======
     $('#tableDepthTrees').html(html)
+>>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
 }
 
 drawGraph()
