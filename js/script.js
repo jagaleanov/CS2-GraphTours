@@ -85,32 +85,6 @@ class Graph {
             }
         }
         return this.tree.getMatrixHTML();
-<<<<<<< HEAD
-=======
-    }
-
-    depthTourFrom(id, word = "") {
-        id = Number.parseInt(id);
-        word += String(id);
-        if (this.addedList.length == 0) {
-            this.tree.addWord(word);
-            this.addedList.push(id);
-        }
-        if (Array.isArray(this.edgesList[id])) {
-
-            for (let j = 0; j < this.edgesList[id].length; j++) {
-
-                if (this.addedList.indexOf(this.edgesList[id][j]) == -1) {
-                    this.tree.addWord(word + this.edgesList[id][j]);
-                    this.addedList.push(this.edgesList[id][j]);
-
-                    this.depthTourFrom(this.edgesList[id][j], word);
-                }
-
-            }
-        }
-        return this.tree.getMatrixHTML();
->>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
     }
 }
 
@@ -345,13 +319,13 @@ class Tree {
             html += '</tr>';
         }
 
-<<<<<<< HEAD
+
 
         return html;
     }
 
-=======
->>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
+
+
     //RESTART
     restart() {
         this.tableData = [[]];
@@ -420,15 +394,9 @@ let insertData = true;
 
 function insertNode(x, y) {
     if (insertData == true) {
-<<<<<<< HEAD
-        graph.insertNode(x, y);
-        drawTable();
-        drawGraph();
-=======
             graph.insertNode(x, y);
             drawTable();
             drawGraph();
->>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
     }
 }
 
@@ -559,8 +527,8 @@ function drawTrees() {
         html += '</div>';
         html += '</div>';
     }
-    //html = graph.pathsFrom(1);
     $('#tableWidthTrees').html(html)
+
     html = "";
     for (let i = 1; i < graph.nodesList.length; i++) {
         graph.addedList = [];
@@ -574,12 +542,7 @@ function drawTrees() {
         html += '</div>';
         html += '</div>';
     }
-    //html = graph.pathsFrom(1);
-<<<<<<< HEAD
     $('#tableDepthTrees').html(html);
-=======
-    $('#tableDepthTrees').html(html)
->>>>>>> d37a28adf27b46393c868c18ea6259be767f3eb6
 }
 
 drawGraph()
