@@ -63,7 +63,6 @@ class Graph {
         return this.tree.getMatrixHTML();
     }
 
-
     depthTourFrom(id, word = "") {
         id = Number.parseInt(id);
         word += String(id);
@@ -277,7 +276,6 @@ class Tree {
             this.addLine();
             this.treeToMatrix(head.right, charCounter, 1);
         }
-
     }
 
     completeMatrix() {
@@ -318,13 +316,8 @@ class Tree {
             }
             html += '</tr>';
         }
-
-
-
         return html;
     }
-
-
 
     //RESTART
     restart() {
@@ -546,7 +539,3 @@ function drawTrees() {
 }
 
 drawGraph()
-
-
-
-
